@@ -7,6 +7,7 @@ import {
 } from "react-native";
 import credentials from "../credentials.json";
 import { useState } from "react";
+import {useRouter} from "expo-router";
 
 export default function SignIn({
   loginToggle,
@@ -18,6 +19,7 @@ export default function SignIn({
   const [usernameErr, setUsernameErr] = useState("");
   const [passwordErr, setPasswordErr] = useState("");
   const { users } = credentials;
+  const router = useRouter();
 
   const handleLogin = () => {
     checkUsername();
@@ -25,6 +27,7 @@ export default function SignIn({
     for (let user of users) {
       if (user.username === username && user.password === password) {
         loginToggle(true);
+        router.replace("/calgary");
         return;
       }else if(user.username === username && user.password !== password){
         alert("incorrect password");
@@ -57,7 +60,7 @@ export default function SignIn({
       <View style={styles.formContainer}>
         <Text style={styles.title}>Assignment 2</Text>
         <TextInput
-          style={styles.input}
+          style={usernameErr ? styles.inputErr : styles.input}
           inputMode="text"
           value={username}
           onChangeText={(value: string) => setUsername(value)}
@@ -66,7 +69,7 @@ export default function SignIn({
         />
         {usernameErr && <Text style={styles.txtErr}>{usernameErr}</Text>}
         <TextInput
-          style={styles.input}
+          style={passwordErr ? styles.inputErr : styles.input}
           inputMode="text"
           secureTextEntry={true}
           value={password}
@@ -96,6 +99,15 @@ const styles = StyleSheet.create({
     fontStyle: "italic",
     marginBottom: 60,
   },
+  inputErr: {
+    height: 45,
+    width: '100%',
+    margin: 12,
+    borderWidth: 1,
+    borderColor: "red",
+    borderRadius: 15,
+    padding: 10,
+  },
   input: {
     height: 45,
     width: '100%',
@@ -116,7 +128,7 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "#000",
     textAlign: "center",
-    fontWeight: "bold",
+    fontWeight: "semibold",
   },
   txtErr:{
     color: "red",
