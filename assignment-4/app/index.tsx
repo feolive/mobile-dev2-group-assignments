@@ -1,6 +1,7 @@
 import { View, Text, StyleSheet } from "react-native";
 import {useState} from "react";
 import SignIn from "../components/sign-in";
+import { useRouter,Link } from "expo-router";
 
 export default function Login() {
 
@@ -8,7 +9,11 @@ export default function Login() {
 
     return (
         <View style={styles.container}>
-             <SignIn loginToggle={setIsLoggedIn}/>
+            {isLoggedIn ? (
+                <Link href="/calgary">Go to Calgary</Link>
+            ) : (
+                <SignIn loginToggle={setIsLoggedIn}/>
+            )}
         </View>
     );
 }
