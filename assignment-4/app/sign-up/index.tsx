@@ -7,17 +7,10 @@ import {
 } from "react-native";
 import { useState } from "react";
 import { UserParam } from "../components/types";
-import supabase from "../components/supabase";
+import supabase, { supabaseGetUser, supabaseSignIn } from "../components/supabase";
 import { router } from "expo-router";
 import { supabaseSignUp } from "../components/supabase";
 
-const generateUUID = () => {
-  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
-    var r = (Math.random() * 16) | 0,
-      v = c == "x" ? r : (r & 0x3) | 0x8;
-    return v.toString(16);
-  });
-};
 
 const insertUser = async (user: UserParam): Promise<any> => {
   try {
@@ -87,7 +80,7 @@ export default function SignUp() {
     }
   };
 
-  const handleSignUp = () => {
+  const handleSignUp = async () => {
     checkEmail();
     checkFirstName();
     checkLastName();
@@ -102,14 +95,17 @@ export default function SignUp() {
       password: user.password,
       email: user.email,
     };
-    supabaseSignUp(newUser).then((currUser) => {
-      newUser.uuid = currUser.id || "";
-      insertUser(newUser);
-      router.replace("/calgary");
-    }).catch((err) => {
-      // alert(err.error);
-      alert(JSON.stringify(err))
-    });
+    try{
+    const currUser = await supabaseSignUp(newUser);
+    await supabaseSignIn(user.email, user.password);
+    console.log(currUser);
+    newUser.uuid = currUser?.id || "";
+    insertUser(newUser);
+    router.replace("/calgary");
+  }catch (err) {
+    console.log(err);
+    alert(err);
+  }
   };
 
   return (

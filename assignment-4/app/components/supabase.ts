@@ -42,7 +42,7 @@ const supabaseSignIn = async (email: string, password: string): Promise<Supabase
   }
 };
 
-const supabaseSignUp = async (user: UserParam): Promise<User> => {
+const supabaseSignUp = async (user: UserParam) => {
   try{
       let resp = await supabase.auth.signUp({
         email: user.email,
@@ -51,11 +51,7 @@ const supabaseSignUp = async (user: UserParam): Promise<User> => {
       if (resp.error) {
         throw resp.error;
       }
-      const currUser = await supabaseGetUser();
-      if (!currUser) {
-        throw new Error("User not found");
-      }
-      return currUser;
+      return resp.data.user;
   } catch (err) {
     throw err;
   }
