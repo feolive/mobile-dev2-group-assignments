@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet } from "react-native";
-import CityCard from "../../components/city-card";
+import CityCard from "../components/city-card";
 import { Link } from "expo-router";
 
 export default function Calgary() {

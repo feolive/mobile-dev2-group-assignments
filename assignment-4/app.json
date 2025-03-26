@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "assignment-2",
-    "slug": "assignment-2",
+    "name": "assignment-4",
+    "slug": "assignment-4",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -12,6 +12,10 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
+    "plugins": [
+      "expo-router"
+    ],
+    "scheme": "myapp",
     "ios": {
       "supportsTablet": true
     },

@@ -5,36 +5,47 @@ import {
   StyleSheet,
   TextInput,
 } from "react-native";
-import credentials from "../credentials.json";
 import { useState } from "react";
-import {useRouter} from "expo-router";
+import {useRouter, Stack} from "expo-router";
+import supabase from "./supabase";
+import { AuthResponse } from "./types";
 
-export default function SignIn({
-  loginToggle,
-}: {
-  loginToggle: (value: boolean) => void;
-}) {
+const supabaseSignIn = async (email: string, password: string): Promise<AuthResponse> => {
+  try{
+    let { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password
+    });
+    if (error) {
+      throw error;
+    }
+    return { data: { data }, error: null };
+  } catch (err) {
+    return { data: { data: null }, error: err as string };
+  }
+};
+
+
+export default function SignIn() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [usernameErr, setUsernameErr] = useState("");
   const [passwordErr, setPasswordErr] = useState("");
-  const { users } = credentials;
   const router = useRouter();
+  
 
   const handleLogin = () => {
     checkUsername();
     checkPassword();
-    for (let user of users) {
-      if (user.username === username && user.password === password) {
-        loginToggle(true);
-        router.replace("/calgary");
-        return;
-      }else if(user.username === username && user.password !== password){
-        alert("incorrect password");
-        return;
+    supabaseSignIn(username, password).then((resp) => {
+      if (resp.error) {
+        throw new Error(resp.error);
       }
-    }
-    alert("username not found");
+      router.replace("/calgary");
+    }).catch((err: AuthResponse) => {
+      console.log(err.error);
+      alert(err.error);
+    });
   };
 
   const checkUsername = () => {
@@ -81,6 +92,9 @@ export default function SignIn({
       <TouchableOpacity style={styles.button} onPress={handleLogin}>
         <Text style={styles.buttonText}>Sign In</Text>
       </TouchableOpacity>
+      <TouchableOpacity style={styles.signUpButton} onPress={() => router.push("/sign-up")}>
+        <Text style={styles.buttonText}>Sign Up</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -119,6 +133,14 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: "#99ff99",
+    height: 40,
+    width: '100%',
+    padding: 10,
+    borderRadius: 20,
+    marginTop: 60,
+  },
+  signUpButton: {
+    backgroundColor: "#007AFF",
     height: 40,
     width: '100%',
     padding: 10,

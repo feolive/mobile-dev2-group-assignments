@@ -2,7 +2,7 @@
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import {useState} from "react";
 import { Link } from "expo-router";
-import {User} from "../../components/types";
+import {User} from "../components/types";
 
 export default function Home() {
     const [user, setUser] = useState<User | null>(null);

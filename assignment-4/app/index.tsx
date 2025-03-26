@@ -1,18 +1,27 @@
-import { View, Text, StyleSheet } from "react-native";
-import {useState} from "react";
-import SignIn from "../components/sign-in";
-import { useRouter,Link } from "expo-router";
+import { View, StyleSheet } from "react-native";
+import {useState, useEffect} from "react";
+import SignIn from "./components/sign-in";
+import { Link } from "expo-router";
+import { User } from "@supabase/supabase-js";
+import { supabaseGetUser } from "./components/supabase";
+
+
 
 export default function Login() {
+    const [user, setUser] = useState<User | null>(null);
 
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    useEffect(() => {
+        supabaseGetUser().then((user) => {
+          setUser(user);
+        });
+      }, []);
 
     return (
         <View style={styles.container}>
-            {isLoggedIn ? (
+            {user ? (
                 <Link href="/calgary">Go to Calgary</Link>
             ) : (
-                <SignIn loginToggle={setIsLoggedIn}/>
+                <SignIn />
             )}
         </View>
     );
