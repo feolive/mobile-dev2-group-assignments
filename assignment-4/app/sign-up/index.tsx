@@ -101,7 +101,7 @@ export default function SignUp() {
     console.log(currUser);
     newUser.uuid = currUser?.id || "";
     insertUser(newUser);
-    router.replace("/calgary");
+    router.replace("/");
   }catch (err) {
     console.log(err);
     alert(err);
