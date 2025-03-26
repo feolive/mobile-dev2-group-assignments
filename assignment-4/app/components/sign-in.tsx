@@ -6,24 +6,9 @@ import {
   TextInput,
 } from "react-native";
 import { useState } from "react";
-import {useRouter, Stack} from "expo-router";
-import supabase from "./supabase";
-import { AuthResponse } from "./types";
-
-const supabaseSignIn = async (email: string, password: string): Promise<AuthResponse> => {
-  try{
-    let { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password
-    });
-    if (error) {
-      throw error;
-    }
-    return { data: { data }, error: null };
-  } catch (err) {
-    return { data: { data: null }, error: err as string };
-  }
-};
+import {useRouter} from "expo-router";
+import { supabaseSignIn } from "./supabase";
+import { SupabaseResponse } from "./types";
 
 
 export default function SignIn() {
@@ -35,14 +20,14 @@ export default function SignIn() {
   
 
   const handleLogin = () => {
-    checkUsername();
-    checkPassword();
+    // checkUsername();
+    // checkPassword();
     supabaseSignIn(username, password).then((resp) => {
       if (resp.error) {
         throw new Error(resp.error);
       }
       router.replace("/calgary");
-    }).catch((err: AuthResponse) => {
+    }).catch((err: SupabaseResponse) => {
       console.log(err.error);
       alert(err.error);
     });
@@ -75,7 +60,7 @@ export default function SignIn() {
           inputMode="text"
           value={username}
           onChangeText={(value: string) => setUsername(value)}
-          onEndEditing={() => checkUsername()}
+          // onEndEditing={() => checkUsername()}
           placeholder="Username"
         />
         {usernameErr && <Text style={styles.txtErr}>{usernameErr}</Text>}
@@ -85,7 +70,7 @@ export default function SignIn() {
           secureTextEntry={true}
           value={password}
           onChangeText={(value: string) => setPassword(value)}
-          onEndEditing={() => checkPassword()}
+          // onEndEditing={() => checkPassword()}
           placeholder="Password"
         />
         {passwordErr && <Text style={styles.txtErr}>{passwordErr}</Text>}

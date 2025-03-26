@@ -8,8 +8,8 @@ import {
 import { useState } from "react";
 import { UserParam } from "../components/types";
 import supabase from "../components/supabase";
-import { AuthResponse } from "../components/types";
 import { router } from "expo-router";
+import { supabaseSignUp } from "../components/supabase";
 
 const generateUUID = () => {
   return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
@@ -21,31 +21,25 @@ const generateUUID = () => {
 
 const insertUser = async (user: UserParam): Promise<any> => {
   try {
-    let { error } = await supabase.from("user_details").insert([user]);
+    if (!user.uuid) {
+      throw new Error("UUID is required");
+    }
+    console.log("param user: " + JSON.stringify(user));
+    let { error } = await supabase.from("user_details").insert([{
+      uuid: user.uuid,
+      first_name: user.first_name,
+      last_name: user.last_name,
+      email: user.email,
+    }]);
     if (error) {
       throw error;
     }
   } catch (err) {
     console.log(err);
-    alert("something wrong happened");
+    alert(err);
   }
 };
 
-const supabaseSignUp = async (user: UserParam): Promise<AuthResponse> => {
-  try{
-      let { data, error } = await supabase.auth.signUp({
-        email: user.email,
-        password: user.password,
-      });
-      if (error) {
-        throw error;
-      }
-      let resp: AuthResponse = { data: { data }, error };
-      return resp;
-  } catch (err) {
-    return { data: { data: null }, error: err as string };
-  }
-};
 
 export default function SignUp() {
   const [user, setUser] = useState<UserParam>({} as UserParam);
@@ -82,11 +76,11 @@ export default function SignUp() {
   };
 
   const checkPassword = () => {
-    let passwordRegex =
-      /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*()_+])[A-Za-z\d!@#$%^&*()_+]{8,20}$/;
+    let passwordRegex = /^[a-zA-Z0-9]{6,15}$/;
+      // /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*()_+])[A-Za-z\d!@#$%^&*()_+]{8,20}$/;
     if (!passwordRegex.test(user?.password || "")) {
       setPasswordErr(
-        "*password must be between 8 and 20 characters including at least one uppercase letter, one lowercase letter, one number, and one special character"
+        "*password must be between 6 and 15 characters or numbers"
       );
     } else {
       setPasswordErr("");
@@ -102,22 +96,19 @@ export default function SignUp() {
       return;
     }
     const newUser = {
-      uuid: generateUUID(),
+      uuid: "",
       first_name: user.first_name,
       last_name: user.last_name,
       password: user.password,
       email: user.email,
     };
-    supabaseSignUp(newUser).then((resp) => {
-      if (resp.error) {
-        alert(resp.error);
-        return;
-      }
+    supabaseSignUp(newUser).then((currUser) => {
+      newUser.uuid = currUser.id || "";
       insertUser(newUser);
       router.replace("/calgary");
-    }).catch((err: AuthResponse) => {
-      console.log(err.error);
-      alert("something wrong happened");
+    }).catch((err) => {
+      // alert(err.error);
+      alert(JSON.stringify(err))
     });
   };
 

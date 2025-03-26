@@ -6,7 +6,7 @@ export type UserParam = {
     email: string;
 };
 
-export type AuthResponse = {
+export type SupabaseResponse = {
     data: {}|null;
     error: string | null;
 };
