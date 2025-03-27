@@ -26,7 +26,7 @@ export default function SignIn() {
       if (resp.error) {
         throw new Error(resp.error);
       }
-      router.replace("/calgary");
+      router.replace("/");
     }).catch((err: SupabaseResponse) => {
       console.log(err.error);
       alert(err.error);

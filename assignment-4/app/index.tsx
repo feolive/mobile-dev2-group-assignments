@@ -6,13 +6,6 @@ import { User } from "@supabase/supabase-js";
 import supabase, { supabaseGetUser, supabaseSignOut } from "./components/supabase";
 import { UserParam } from "./components/types";
 
-const handleSignOut = async () => {
-    try {
-      await supabaseSignOut();
-    } catch (error) {
-      console.error(error);
-    }
-  };
 
 export default function Login() {
     const [user, setUser] = useState<User | null>(null);
@@ -24,6 +17,16 @@ export default function Login() {
           // console.log(user);
         });
       }, []);
+
+      const handleSignOut = async () => {
+        try {
+          await supabaseSignOut();
+          setUser(null);
+          setUserDisplay(null);
+        } catch (error) {
+          console.error(error);
+        }
+      };
 
     useEffect(() => {
       if (user) {
